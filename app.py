@@ -1,12 +1,12 @@
 # app.py
 import streamlit as st
-from retriever import load_retriever
+from rag.retriever import load_retriever
 from llm.llm_model import load_llm
 
-# Import chain creation API (newer pattern)
-from langchain_classic.chains import create_retrieval_chain
-from langchain_classic.chains.combine_documents import create_stuff_documents_chain
+# Updated LangChain imports - using manual chain approach (most compatible)
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
 
 st.set_page_config(page_title="EquiLens – Equity News Assistant", layout="wide")
 
@@ -18,25 +18,34 @@ query = st.text_input("Ask about the latest equity/market news:")
 if query:
     with st.spinner("Processing your query..."):
         retriever = load_retriever(k=5)
-        llm = load_llm(model_name="mistral")  # or whichever you use
+        llm = load_llm(model_name="mistral")
 
         # Define a system prompt & human prompt
         system_prompt = (
             "You are an expert financial news analyst. "
             "Use the following context from recent equity-market news to answer the question. "
-            "If you don't know, say you don't know."
+            "If you don't know, say you don't know.\n\n"
+            "Context: {context}"
         )
         prompt = ChatPromptTemplate.from_messages([
             ("system", system_prompt),
             ("human", "{input}")
         ])
 
-        # create chain to combine docs
+        # Create chain to combine docs
         docs_chain = create_stuff_documents_chain(llm=llm, prompt=prompt)
-        # build retrieval chain
-        chain = create_retrieval_chain(retriever=retriever, combine_documents_chain=docs_chain)
+        # Build retrieval chain
+        chain = create_retrieval_chain(retriever=retriever, combine_docs_chain=docs_chain)
 
         result = chain.invoke({"input": query})
-        answer = result["text"] if isinstance(result, dict) and "text" in result else result
+        answer = result.get("answer", "No answer found")
 
         st.markdown(f"### 📰 Answer:\n{answer}")
+        
+        # Optionally show sources
+        if "context" in result:
+            with st.expander("📚 View Sources"):
+                for i, doc in enumerate(result["context"], 1):
+                    st.markdown(f"**Source {i}:** {doc.metadata.get('title', 'Unknown')}")
+                    st.markdown(f"URL: {doc.metadata.get('source', 'N/A')}")
+                    st.markdown("---")

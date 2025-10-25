@@ -1,13 +1,30 @@
-langchain
-langchain-community
-langchain-core
-chromadb
-sentence-transformers
-beautifulsoup4
-requests
-streamlit
-schedule
-newspaper3k
-langchain_huggingface 
-langchain_chroma
-retriever
+
+# Core LangChain packages
+langchain>=0.3.0
+langchain-core>=0.3.0
+langchain-community>=0.3.0
+
+# Vector store and embeddings
+langchain-chroma>=0.1.4
+langchain-huggingface>=0.1.0
+chromadb>=0.5.0
+sentence-transformers>=2.2.0
+
+# LLM providers (choose what you need)
+langchain-groq>=0.2.0        # For Mistral via Groq (recommended - fast & free tier)
+langchain-openai>=0.2.0      # For OpenAI GPT models
+langchain-ollama>=0.2.0      # For local Ollama models
+
+# Web scraping
+beautifulsoup4>=4.12.0
+requests>=2.31.0
+lxml>=4.9.0
+
+# Streamlit for UI
+streamlit>=1.30.0
+
+# Scheduling
+schedule>=1.2.0
+
+# Additional utilities
+python-dotenv>=1.0.0

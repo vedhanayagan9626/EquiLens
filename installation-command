@@ -1,0 +1,20 @@
+# 1. Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate  # On Mac/Linux
+# OR
+venv\Scripts\activate  # On Windows
+
+# 2. Upgrade pip
+pip install --upgrade pip
+
+# 3. Install all dependencies
+pip install -r requirements.txt
+
+# 4. Set up environment variables
+cp .env.example .env
+# Edit .env and add your GROQ_API_KEY (get free from https://console.groq.com)
+
+# 5. Run the pipeline
+python scraper/scraper.py       # Scrape news
+python rag/embed_store.py       # Build vector store
+streamlit run app.py            # Run the app!
