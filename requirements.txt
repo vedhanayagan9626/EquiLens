@@ -8,3 +8,6 @@ requests
 streamlit
 schedule
 newspaper3k
+langchain_huggingface 
+langchain_chroma
+retriever
